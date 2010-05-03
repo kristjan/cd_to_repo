@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+result=`prepo $1`
+if [ $? -eq 0 ]; then
+  cd $result
+else
+  echo -e $result
+fi

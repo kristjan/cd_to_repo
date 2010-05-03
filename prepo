@@ -1,0 +1,34 @@
+#! /usr/bin/env ruby
+
+SRC_PATH = File.expand_path('~/src')
+
+prefix = ARGV[0]
+
+if prefix.nil? || prefix.empty?
+  puts "Supply a repo name/prefix"
+  exit 1
+end
+
+repos = Dir.glob(File.join(SRC_PATH, '*')).map{|r| r.split('/').last}
+
+results = repos.select{|r| r.index(prefix) == 0}
+exact = results.detect{|r| r == prefix}
+
+if exact
+  puts File.join(SRC_PATH, exact)
+  exit 0
+elsif results.size == 1
+  puts File.join(SRC_PATH, results.first)
+  exit 0
+elsif results.empty?
+  puts "  No repos start with '#{prefix}'"
+  exit 1
+elsif results.size > 1
+  puts "  Multiple repos match:"
+  results.sort.each {|s| puts "    #{s}"}
+  exit 1
+else
+  puts "  Well this was unexpected."
+  puts "  Exact: #{exact.inspect}."
+  puts "  Results: #{results.inspect}."
+end
