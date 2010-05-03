@@ -4,12 +4,13 @@ SRC_PATH = File.expand_path('~/src')
 
 prefix = ARGV[0]
 
+repos = Dir.glob(File.join(SRC_PATH, '*')).map{|r| r.split('/').last}
+
 if prefix.nil? || prefix.empty?
-  puts "Supply a repo name/prefix"
+  puts "Available repos:"
+  repos.sort.each {|r| puts "    #{r}"}
   exit 1
 end
-
-repos = Dir.glob(File.join(SRC_PATH, '*')).map{|r| r.split('/').last}
 
 results = repos.select{|r| r.index(prefix) == 0}
 exact = results.detect{|r| r == prefix}
