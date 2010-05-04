@@ -2,34 +2,39 @@
 
 SRC_PATH = File.expand_path('~/src')
 
-exp = ARGV[0]
+query = ARGV[0]
 
 repos = Dir.glob(File.join(SRC_PATH, '*')).map{|r| r.split('/').last}
 
-if exp.nil? || exp.empty?
+if query.nil? || query.empty?
   puts "Available repos:"
   repos.sort.each {|r| puts "    #{r}"}
   exit 1
 end
 
-results = repos.select{|r| r =~ /#{exp}/ }
-exact = results.detect{|r| r == exp}
+exact    = repos.detect{|r| r == query}
+prefixes = repos.select{|r| r.index(query) == 0}
+matches  = repos.select{|r| r =~ /#{query}/ }
 
 if exact
   puts File.join(SRC_PATH, exact)
   exit 0
-elsif results.size == 1
-  puts File.join(SRC_PATH, results.first)
+elsif prefixes.size == 1
+  puts File.join(SRC_PATH, prefixes.first)
   exit 0
-elsif results.empty?
-  puts "  No repos start with '#{exp}'"
+elsif matches.size == 1
+  puts File.join(SRC_PATH, matches.first)
+  exit 0
+elsif matches.empty?
+  puts "  No repos match '#{query}'"
   exit 1
-elsif results.size > 1
-  puts "  Multiple repos match:"
-  results.sort.each {|s| puts "    #{s}"}
+elsif matches.size > 1
+  puts "  Multiple repos match '#{query}':"
+  matches.sort.each {|s| puts "    #{s}"}
   exit 1
 else
   puts "  Well this was unexpected."
   puts "  Exact: #{exact.inspect}."
-  puts "  Results: #{results.inspect}."
+  puts "  Prefixes: #{prefixes.inspect}."
+  puts "  Matches: #{matches.inspect}."
 end
