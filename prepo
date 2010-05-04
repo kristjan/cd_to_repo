@@ -2,18 +2,18 @@
 
 SRC_PATH = File.expand_path('~/src')
 
-prefix = ARGV[0]
+exp = ARGV[0]
 
 repos = Dir.glob(File.join(SRC_PATH, '*')).map{|r| r.split('/').last}
 
-if prefix.nil? || prefix.empty?
+if exp.nil? || exp.empty?
   puts "Available repos:"
   repos.sort.each {|r| puts "    #{r}"}
   exit 1
 end
 
-results = repos.select{|r| r.index(prefix) == 0}
-exact = results.detect{|r| r == prefix}
+results = repos.select{|r| r =~ /#{exp}/ }
+exact = results.detect{|r| r == exp}
 
 if exact
   puts File.join(SRC_PATH, exact)
@@ -22,7 +22,7 @@ elsif results.size == 1
   puts File.join(SRC_PATH, results.first)
   exit 0
 elsif results.empty?
-  puts "  No repos start with '#{prefix}'"
+  puts "  No repos start with '#{exp}'"
   exit 1
 elsif results.size > 1
   puts "  Multiple repos match:"
